@@ -1,0 +1,30 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Secrets and local configuration
+.env
+SMS/.env
+.env.example
+
+# Databases and local files
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+*.log
+
+# Testing and tooling
+.coverage
+htmlcov/
+.pytest_cache/
+celerybeat-schedule*
+
+# Editors and OS
+.idea/
+.DS_Store
