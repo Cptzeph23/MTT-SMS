@@ -6,7 +6,12 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SMS.settings')
+    # `manage.py test` always uses the isolated test settings so the test
+    # runner can never create databases on Supabase.
+    default_settings = (
+        "SMS.settings.test" if sys.argv[1:2] == ["test"] else "SMS.settings.dev"
+    )
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", default_settings)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -18,5 +23,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
