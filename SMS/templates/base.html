@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}School Management System{% endblock %}</title>
+<style>
+  :root {
+    --maroon: #7a1f2b;
+    --maroon-dark: #5c1620;
+    --gray-900: #1f2023;
+    --gray-700: #43454a;
+    --gray-300: #d7d7db;
+    --gray-100: #f4f4f6;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+  }
+  header.app-header {
+    background: var(--maroon);
+    color: var(--white);
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header.app-header a { color: var(--white); text-decoration: none; font-weight: 600; }
+  nav.app-nav {
+    background: var(--gray-900);
+    padding: 0.5rem 1.5rem;
+  }
+  nav.app-nav a {
+    color: var(--gray-300);
+    text-decoration: none;
+    margin-right: 1.2rem;
+    font-size: 0.92rem;
+  }
+  nav.app-nav a:hover { color: var(--white); }
+  main.app-main {
+    max-width: 960px;
+    margin: 2rem auto;
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    padding: 2rem;
+  }
+  .center-card {
+    max-width: 420px;
+    margin: 4rem auto;
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 2rem;
+  }
+  .center-card h1 { color: var(--maroon); font-size: 1.4rem; margin-top: 0; }
+  form p { margin: 0 0 1rem 0; }
+  label { display: block; font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
+  input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 0.55rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    font-size: 0.95rem;
+  }
+  button, .btn {
+    background: var(--maroon);
+    color: var(--white);
+    border: none;
+    padding: 0.6rem 1.1rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  button:hover, .btn:hover { background: var(--maroon-dark); }
+  .errorlist { color: var(--maroon); list-style: none; padding: 0; margin: 0.2rem 0; font-size: 0.85rem; }
+  .messages { list-style: none; padding: 0; margin: 0 0 1rem 0; }
+  .messages li { padding: 0.6rem 0.9rem; border-radius: 4px; margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .messages .success { background: #e6f4ea; color: #1e6b34; }
+  .messages .error { background: #fbe7e9; color: var(--maroon-dark); }
+  .helptext { color: var(--gray-700); font-size: 0.8rem; }
+  .muted-link { color: var(--gray-700); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+{% if request.user.is_authenticated %}
+<header class="app-header">
+  <a href="{% url 'core:dashboard' %}">School Management System{% if current_school %} - {{ current_school.name }}{% endif %}</a>
+  <span>{{ request.user.display_name }} ({{ request.user.get_role_display }})</span>
+</header>
+<nav class="app-nav">
+  {% for item in nav_items %}<a href="{% url item.url_name %}">{{ item.label }}</a>{% endfor %}
+  <form method="post" action="{% url 'accounts:logout' %}" style="display:inline">
+    {% csrf_token %}
+    <button type="submit" style="background:none;color:var(--gray-300);padding:0;">Log out</button>
+  </form>
+</nav>
+{% endif %}
+{% if messages %}
+<ul class="messages" style="max-width:960px;margin:1rem auto 0 auto;">
+  {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+</ul>
+{% endif %}
+{% block content %}{% endblock %}
+</body>
+</html>

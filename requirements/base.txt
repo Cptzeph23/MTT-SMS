@@ -1,0 +1,15 @@
+# Core runtime dependencies. Exact versions are frozen in Phase 1a
+# after a clean install (pip freeze > requirements/lock.txt).
+Django>=5.2,<7.0
+djangorestframework>=3.16
+djangorestframework-simplejwt>=5.5
+django-environ>=0.12
+whitenoise>=6.9
+psycopg[binary]>=3.2
+django-storages[s3]>=1.14
+celery>=5.5
+redis>=5.2
+reportlab>=4.2
+Pillow>=11.0
+openpyxl>=3.1
+pdfplumber>=0.11

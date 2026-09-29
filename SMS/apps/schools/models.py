@@ -1,56 +1,25 @@
-from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
-from smsApp.querysets import SchoolQuerySet
+from smsApp.models import TimeStampedModel
 
 
-class AuditLog(models.Model):
-    """Immutable record of a sensitive operation."""
+class School(TimeStampedModel):
+    """A school (tenant). Branding and configuration are added in Phase 2."""
 
-    school = models.ForeignKey(
-        "schools.School",
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT,
-        related_name="audit_logs",
+    name = models.CharField(max_length=200)
+    code = models.SlugField(
+        max_length=30,
+        unique=True,
+        help_text="Short unique code used in the login address, for example 'stmarys'.",
     )
-    actor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="audit_events",
-    )
-    actor_label = models.CharField(max_length=150, blank=True)
-    actor_role = models.CharField(max_length=20, blank=True)
-    action = models.CharField(max_length=60, db_index=True)
-    module = models.CharField(max_length=60)
-    object_type = models.CharField(max_length=100, blank=True)
-    object_id = models.CharField(max_length=64, blank=True)
-    object_repr = models.CharField(max_length=255, blank=True)
-    previous_value = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
-    new_value = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    objects = SchoolQuerySet.as_manager()
+    is_active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ["-created_at", "-id"]
-        indexes = [
-            models.Index(fields=["school", "created_at"], name="audit_school_created_idx"),
-            models.Index(fields=["module", "action"], name="audit_module_action_idx"),
-        ]
+        ordering = ["name"]
 
     def __str__(self):
-        stamp = self.created_at.strftime("%Y-%m-%d %H:%M:%S") if self.created_at else ""
-        return f"{stamp} {self.action} {self.object_repr}".strip()
+        return self.name
 
     def save(self, *args, **kwargs):
-        if not self._state.adding:
-            raise ValueError("Audit log entries are immutable.")
+        self.code = (self.code or "").strip().lower()
         super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        raise ValueError("Audit log entries cannot be deleted.")
