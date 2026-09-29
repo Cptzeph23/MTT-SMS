@@ -32,14 +32,14 @@ class LoginViewTests(TestCase):
             reverse("accounts:login-school", args=["alpha"]),
             {"username": "tea1", "password": DEFAULT_PASSWORD},
         )
-        self.assertRedirects(response, reverse("core:dashboard"))
+        self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
 
     def test_login_is_case_insensitive_on_username(self):
         response = self.client.post(
             reverse("accounts:login-school", args=["alpha"]),
             {"username": "TEA1", "password": DEFAULT_PASSWORD},
         )
-        self.assertRedirects(response, reverse("core:dashboard"))
+        self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
 
     def test_wrong_password_shows_error_and_is_audited(self):
         response = self.client.post(
@@ -55,13 +55,13 @@ class LoginViewTests(TestCase):
             reverse("accounts:login"),
             {"school_code": "alpha", "username": "tea1", "password": DEFAULT_PASSWORD},
         )
-        self.assertRedirects(response, reverse("core:dashboard"))
+        self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
 
     def test_super_admin_uses_generic_login_with_no_school_code(self):
         response = self.client.post(
             reverse("accounts:login"), {"username": "root", "password": DEFAULT_PASSWORD}
         )
-        self.assertRedirects(response, reverse("core:dashboard"))
+        self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
 
     def test_first_login_redirects_to_change_password(self):
         make_user(self.school, Role.TEACHER, "newteacher", must_change_password=True)
@@ -82,7 +82,7 @@ class LoginViewTests(TestCase):
     def test_already_authenticated_user_is_redirected_away_from_login(self):
         self.client.login(username="tea1", password=DEFAULT_PASSWORD, school_code="alpha")
         response = self.client.get(reverse("accounts:login-school", args=["alpha"]))
-        self.assertRedirects(response, reverse("core:dashboard"))
+        self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
 
 
 class ForcedPasswordChangeTests(TestCase):
@@ -108,7 +108,7 @@ class ForcedPasswordChangeTests(TestCase):
                 "confirm_password": STRONG_PASSWORD,
             },
         )
-        self.assertRedirects(response, reverse("core:dashboard"))
+        self.assertRedirects(response, reverse("core:dashboard"), fetch_redirect_response=False)
         self.user.refresh_from_db()
         self.assertFalse(self.user.must_change_password)
 
