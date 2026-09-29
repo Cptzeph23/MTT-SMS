@@ -18,6 +18,10 @@ class LoginViewTests(TestCase):
         self.teacher = make_user(self.school, Role.TEACHER, "tea1", must_change_password=False)
         self.admin = make_super_admin("root")
 
+    def test_root_redirects_to_login(self):
+        response = self.client.get("/")
+        self.assertRedirects(response, reverse("accounts:login"), fetch_redirect_response=False)
+
     def test_school_branded_login_page_renders(self):
         response = self.client.get(reverse("accounts:login-school", args=["alpha"]))
         self.assertEqual(response.status_code, 200)
